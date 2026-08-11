@@ -1,0 +1,61 @@
+# render.yaml
+# Despliegue de CyberGuard en Render (blueprint):
+# - 1 base de datos PostgreSQL gestionada por Render.
+# - 1 servicio web Node/Express que sirve solo la API REST y el WebSocket.
+#
+# El frontend (Angular) NO se despliega aquí: Render no permite servir
+# archivos estáticos desde un Web Service, por lo que se publica como un
+# Static Site aparte ("Build from a static site"). La URL del backend se
+# define en `frontend/src/assets/config.json` (se carga en runtime).
+#
+# PASOS PARA EL FRONTEND (Static Site en Render):
+#   - New -> Static Site -> conectar el repositorio.
+#   - Root Directory: frontend
+#   - Build Command: npm install && npm run build -- --configuration production
+#   - Publish Directory: dist/cyberguard-dashboard/browser
+#   - Editar `frontend/src/assets/config.json` con la URL real del backend
+#     (apiUrl + wsUrl) ANTES del primer deploy, ej:
+#       { "apiUrl": "https://cyberguard.onrender.com/api",
+#         "wsUrl":  "wss://cyberguard.onrender.com/ws" }
+#
+# Uso del blueprint: conectar este repositorio a Render -> New Blueprint ->
+# elegir este repositorio. Render crea la BD y el servicio automáticamente.
+
+databases:
+  - name: cyberguard-db
+    plan: free
+    databaseName: cyberguard
+    user: cyberguard
+
+services:
+  - type: web
+    name: cyberguard
+    runtime: node
+    plan: free
+    nodeVersion: "20"
+    healthCheckPath: /api/health
+    autoDeploy: true
+    buildCommand: |
+      cd backend && npm install && npx prisma generate && npm run build
+    startCommand: |
+      cd backend && npx prisma db push && npm run seed && node dist/index.js
+    envVars:
+      # Entorno de producción: activa morgan y deshabilita la depuración.
+      - key: NODE_ENV
+        value: production
+      # Secreto para firmar los JWT (Render genera uno aleatorio y lo guarda).
+      - key: JWT_SECRET
+        generateValue: true
+      # Clave interna para el endpoint /api/events/ingest (SIEM/IDS).
+      - key: API_KEY
+        generateValue: true
+      # Conexión a la base de datos gestionada por Render.
+      - key: DATABASE_URL
+        fromDatabase:
+          name: cyberguard-db
+          property: connectionString
+      # Origen(es) permitidos para CORS. Como el frontend vive en un dominio
+      # distinto, debe completarse con la URL del Static Site, ej:
+      # https://cyberguard-frontend.onrender.com
+      - key: CORS_ORIGIN
+        sync: false

@@ -1,0 +1,141 @@
+:root {
+  --bg: #0b0f14;
+  --bg-2: #0f141b;
+  --panel: #131a23;
+  --panel-2: #17202b;
+  --border: #223041;
+  --text: #d6e2f0;
+  --text-dim: #8296ab;
+  --accent: #00e5a8;
+  --accent-dim: #0b8f6c;
+  --danger: #ff4d5e;
+  --crit: #ff2e4d;
+  --high: #ff8c42;
+  --warning: #ffb020;
+  --info: #38bdf8;
+  --low: #7dd3fc;
+  --crit: #ff2e4d;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  height: 100%;
+  background: var(--bg);
+  color: var(--text);
+  font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+  font-size: 14px;
+}
+
+a { color: var(--accent); text-decoration: none; }
+
+/* Severity badges */
+.badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+.sev-CRITICAL, .sev-critical { background: rgba(255, 46, 77, 0.18); color: var(--crit); }
+.sev-HIGH, .sev-high { background: rgba(255, 140, 66, 0.16); color: var(--high); }
+.sev-MEDIUM, .sev-medium { background: rgba(255, 176, 32, 0.15); color: var(--warning); }
+.sev-LOW, .sev-low { background: rgba(125, 211, 252, 0.12); color: var(--low); }
+.sev-INFO, .sev-info { background: rgba(56, 189, 248, 0.12); color: var(--info); }
+
+.status { padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: 600; }
+.status-NEW { background: rgba(255, 176, 32, 0.15); color: var(--warning); }
+.status-IN_PROGRESS, .status-OPEN, .status-INVESTIGATING { background: rgba(56, 189, 248, 0.15); color: var(--info); }
+.status-RESOLVED, .status-CLOSED, .status-COMPLETED { background: rgba(0, 229, 168, 0.12); color: var(--accent); }
+.status-DISMISSED, .status-CANCELLED { background: rgba(130, 150, 171, 0.15); color: var(--text-dim); }
+.status-FAILED { background: rgba(255, 46, 77, 0.15); color: var(--danger); }
+.status-PENDING, .status-RUNNING, .status-CONTAINED { background: rgba(125, 211, 252, 0.12); color: var(--low); }
+
+.card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+.card h3 {
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-dim);
+  margin-bottom: 12px;
+}
+
+.btn {
+  display: inline-block;
+  padding: 8px 14px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--panel-2);
+  color: var(--text);
+  cursor: pointer;
+  font-size: 13px;
+  transition: 0.15s;
+}
+.btn:hover { border-color: var(--accent); color: var(--accent); }
+.btn-primary { background: var(--accent-dim); border-color: var(--accent-dim); color: #fff; font-weight: 600; }
+.btn-primary:hover { background: var(--accent); color: #04140e; }
+
+input, select, textarea {
+  width: 100%;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--bg-2);
+  color: var(--text);
+  font-size: 13px;
+  outline: none;
+}
+input:focus, select:focus, textarea:focus { border-color: var(--accent); }
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+th {
+  text-align: left;
+  color: var(--text-dim);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--border);
+}
+td {
+  padding: 8px 10px;
+  border-bottom: 1px solid rgba(34, 48, 65, 0.5);
+}
+tr:hover td { background: rgba(0, 229, 168, 0.03); }
+
+.muted { color: var(--text-dim); font-size: 12px; }
+.mono { font-family: Consolas, "Courier New", monospace; font-size: 12px; }
+
+.grid { display: grid; gap: 16px; }
+.grid-4 { grid-template-columns: repeat(4, 1fr); }
+.grid-3 { grid-template-columns: repeat(3, 1fr); }
+.grid-2 { grid-template-columns: repeat(2, 1fr); }
+
+@media (max-width: 1100px) {
+  .grid-4 { grid-template-columns: repeat(2, 1fr); }
+  .grid-3 { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 640px) {
+  .grid-4, .grid-3, .grid-2 { grid-template-columns: 1fr; }
+}
+
+.page { padding: 24px; max-width: 1400px; margin: 0 auto; }
+.page h1 { font-size: 22px; margin-bottom: 4px; }
+.page .subtitle { color: var(--text-dim); margin-bottom: 20px; }
+
+.pagination { display: flex; gap: 8px; align-items: center; margin-top: 14px; }
+
+.bar { height: 10px; border-radius: 6px; background: var(--bg-2); overflow: hidden; }
+.bar > div { height: 100%; border-radius: 6px; }

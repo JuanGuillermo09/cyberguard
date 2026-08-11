@@ -1,0 +1,58 @@
+{
+  "events": [
+    {
+      "source": "APPLICATION",
+      "sourceLabel": "test-api",
+      "type": "HTTP_ANOMALY",
+      "severity": "MEDIUM",
+      "title": "Petición HTTP anómala",
+      "description": "Solicitud con parámetros inusuales detectada en la API de prueba",
+      "sourceIp": "192.168.1.101",
+      "destinationIp": "127.0.0.1",
+      "port": 8080,
+      "protocol": "tcp"
+    },
+    {
+      "source": "SYSTEM",
+      "sourceLabel": "windows-lab",
+      "type": "SERVICE_STOPPED",
+      "severity": "LOW",
+      "title": "Servicio detenido",
+      "description": "El servicio de prueba HTTP dejó de responder",
+      "destinationIp": "127.0.0.1",
+      "port": 8080
+    },
+    {
+      "source": "IDS",
+      "sourceLabel": "ids-windows",
+      "type": "SCAN_DETECTED",
+      "severity": "MEDIUM",
+      "title": "Posible escaneo de puertos",
+      "description": "Conexiones a múltiples puertos consecutivos desde un mismo origen",
+      "sourceIp": "10.0.0.77",
+      "destinationIp": "127.0.0.1"
+    },
+    {
+      "source": "APPLICATION",
+      "sourceLabel": "test-api",
+      "type": "AUTH_ABUSE",
+      "severity": "HIGH",
+      "title": "Abuso de autenticación",
+      "description": "Intentos de acceso reiterados al endpoint de administración",
+      "sourceIp": "10.0.0.99",
+      "destinationIp": "127.0.0.1",
+      "port": 8080,
+      "protocol": "tcp"
+    },
+    {
+      "source": "SYSTEM",
+      "sourceLabel": "windows-lab",
+      "type": "USER_ESCALATION",
+      "severity": "CRITICAL",
+      "title": "Posible escalada de privilegios",
+      "description": "Cambio de grupo de una cuenta de servicio en el laboratorio",
+      "sourceIp": "192.168.1.20",
+      "destinationIp": "127.0.0.1"
+    }
+  ]
+}

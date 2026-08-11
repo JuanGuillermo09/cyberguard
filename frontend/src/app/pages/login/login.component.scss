@@ -1,0 +1,128 @@
+// login.component.scss
+// Estilos de la pantalla de inicio de sesión con el panel de cuentas demo.
+
+.login-wrap {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(ellipse at top, #10222b 0%, var(--bg) 60%);
+}
+
+.login-card {
+  display: flex;
+  gap: 24px;
+  align-items: stretch;
+}
+
+.login {
+  width: 340px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+.logo {
+  text-align: center;
+}
+
+h1 {
+  text-align: center;
+  color: var(--accent);
+  font-size: 24px;
+}
+
+p {
+  text-align: center;
+  margin-bottom: 8px;
+}
+
+label {
+  font-size: 12px;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.error {
+  color: var(--danger);
+  font-size: 13px;
+}
+
+// Panel de cuentas demo
+.demo {
+  width: 320px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+.demo h2 {
+  font-size: 16px;
+  color: var(--accent);
+  margin: 0;
+  text-align: left;
+}
+
+.demo code {
+  background: rgba(255, 255, 255, 0.08);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 12px;
+}
+
+.demo .muted {
+  text-align: left;
+  font-size: 12px;
+  margin: 0;
+}
+
+.demo-user {
+  border-top: 1px solid var(--border);
+  padding-top: 14px;
+}
+
+.demo-user-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.role {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  padding: 2px 8px;
+  border-radius: 10px;
+  color: #fff;
+}
+
+.role.admin {
+  background: #d9534f;
+}
+
+.role.analyst {
+  background: #f0ad4e;
+}
+
+.role.user {
+  background: #5bc0de;
+}
+
+.demo-user p {
+  text-align: left;
+  font-size: 12px;
+  color: var(--text-dim);
+  margin: 0;
+}

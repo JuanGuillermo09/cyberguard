@@ -1,0 +1,16 @@
+// events.component.scss
+// Estilos de la página de eventos de seguridad.
+
+.filters {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.filters select {
+  width: 170px;
+}
+
+.filters input {
+  width: 220px;
+}

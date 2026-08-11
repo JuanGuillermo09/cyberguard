@@ -1,0 +1,61 @@
+<!-- alerts.component.html -->
+<!-- Alertas de seguridad: filtros, tabla con cambio de estado y paginación. -->
+<div class="page">
+  <h1>Alertas</h1>
+  <p class="subtitle">Alertas de seguridad generadas por el SIEM y los detectores.</p>
+
+  <div class="card filters">
+    <select #sev (change)="filters['severity'] = sev.value; load()">
+      <option value="">Toda severidad</option>
+      <option value="CRITICAL">CRITICAL</option>
+      <option value="HIGH">HIGH</option>
+      <option value="MEDIUM">MEDIUM</option>
+      <option value="LOW">LOW</option>
+      <option value="INFO">INFO</option>
+    </select>
+    <select #status (change)="filters['status'] = status.value; load()">
+      <option value="">Todo estado</option>
+      <option value="NEW">NEW</option>
+      <option value="IN_PROGRESS">IN_PROGRESS</option>
+      <option value="RESOLVED">RESOLVED</option>
+      <option value="DISMISSED">DISMISSED</option>
+    </select>
+  </div>
+
+  <div class="card">
+    <table>
+      <thead>
+        <tr><th>Severidad</th><th>Título</th><th>Fuente</th><th>Activo</th><th>Estado</th><th>Creada</th><th>Acción</th></tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let a of items">
+          <td><span class="badge sev-{{ a.severity }}">{{ a.severity }}</span></td>
+          <td>{{ a.title }}</td>
+          <td>{{ a.sourceLabel || a.source }}</td>
+          <td>{{ a.asset?.name || '-' }} <span class="muted mono">{{ a.asset?.ipAddress }}</span></td>
+          <td><span class="status status-{{ a.status }}">{{ a.status }}</span></td>
+          <td class="muted">{{ a.createdAt | date: 'dd/MM HH:mm' }}</td>
+          <td>
+            <select
+              [ngModel]="a.status"
+              (ngModelChange)="changeStatus(a, $event)"
+              style="width: 140px;"
+            >
+              <option value="NEW">NEW</option>
+              <option value="IN_PROGRESS">IN_PROGRESS</option>
+              <option value="RESOLVED">RESOLVED</option>
+              <option value="DISMISSED">DISMISSED</option>
+            </select>
+          </td>
+        </tr>
+        <tr *ngIf="items.length === 0"><td colspan="7" class="muted">Sin alertas registradas.</td></tr>
+      </tbody>
+    </table>
+
+    <div class="pagination" *ngIf="total > 0">
+      <button class="btn" [disabled]="page <= 1" (click)="page = page - 1; load()">Anterior</button>
+      <span class="muted">Página {{ page }} de {{ totalPages }}</span>
+      <button class="btn" [disabled]="page >= totalPages" (click)="page = page + 1; load()">Siguiente</button>
+    </div>
+  </div>
+</div>

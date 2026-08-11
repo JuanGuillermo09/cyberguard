@@ -1,0 +1,352 @@
+// ============================================================
+// CyberGuard - Esquema de base de datos (Prisma + PostgreSQL)
+// ============================================================
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ---------- Enums ----------
+
+enum Role {
+  ADMIN
+  ANALYST
+  USER
+}
+
+enum AssetStatus {
+  ACTIVE
+  INACTIVE
+}
+
+enum AssetType {
+  SERVER
+  WORKSTATION
+  DATABASE
+  SERVICE
+  APPLICATION
+  NETWORK
+  OTHER
+}
+
+enum ScanStatus {
+  PENDING
+  RUNNING
+  COMPLETED
+  FAILED
+  CANCELLED
+}
+
+enum Severity {
+  INFO
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+enum VulnerabilityStatus {
+  OPEN
+  VERIFIED
+  PATCHED
+  MITIGATED
+  FALSE_POSITIVE
+}
+
+enum EventSource {
+  SCANNER
+  IDS
+  APPLICATION
+  SYSTEM
+  SIEM
+}
+
+enum AlertStatus {
+  NEW
+  IN_PROGRESS
+  RESOLVED
+  DISMISSED
+}
+
+enum IncidentStatus {
+  OPEN
+  INVESTIGATING
+  CONTAINED
+  RESOLVED
+  CLOSED
+}
+
+enum RuleType {
+  IDS
+  CORRELATION
+}
+
+enum RuleStatus {
+  ACTIVE
+  INACTIVE
+}
+
+// ---------- Modelos ----------
+
+model User {
+  id           String   @id @default(uuid())
+  username     String   @unique
+  email        String   @unique
+  passwordHash String
+  fullName     String?
+  role         Role     @default(USER)
+  active       Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  assets           Asset[]
+  scans            Scan[]
+  alerts           Alert[]
+  incidents        Incident[]
+  alertActions     AlertAction[]
+  incidentActions  IncidentAction[]
+  auditLogs        AuditLog[]
+
+  @@map("users")
+}
+
+model Asset {
+  id          String      @id @default(uuid())
+  name        String
+  ipAddress   String
+  type        AssetType   @default(OTHER)
+  os          String?
+  description String?
+  status      AssetStatus @default(ACTIVE)
+  createdById String?
+  createdBy   User?       @relation(fields: [createdById], references: [id])
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  scans           Scan[]
+  vulnerabilities Vulnerability[]
+  events          Event[]
+  alerts          Alert[]
+  incidents       Incident[]
+
+  @@index([ipAddress])
+  @@map("assets")
+}
+
+model Scan {
+  id           String     @id @default(uuid())
+  assetId      String
+  asset        Asset      @relation(fields: [assetId], references: [id])
+  status       ScanStatus @default(PENDING)
+  portRange    String     @default("1-1000")
+  startedAt    DateTime?
+  finishedAt   DateTime?
+  error        String?
+  initiatedById String?
+  initiatedBy  User?      @relation(fields: [initiatedById], references: [id])
+  createdAt    DateTime   @default(now())
+
+  results ScanResult[]
+
+  @@index([assetId])
+  @@map("scans")
+}
+
+model ScanResult {
+  id         String   @id @default(uuid())
+  scanId     String
+  scan       Scan     @relation(fields: [scanId], references: [id])
+  port       Int
+  protocol   String   @default("tcp")
+  state      String   @default("open")
+  service    String?
+  version    String?
+  cveCount   Int      @default(0)
+  createdAt  DateTime @default(now())
+
+  vulnerabilities Vulnerability[]
+
+  @@index([scanId])
+  @@map("scan_results")
+}
+
+model Vulnerability {
+  id            String             @id @default(uuid())
+  scanResultId  String?
+  scanResult    ScanResult?        @relation(fields: [scanResultId], references: [id])
+  assetId       String
+  asset         Asset              @relation(fields: [assetId], references: [id])
+  cveId         String?
+  title         String
+  description   String?
+  severity      Severity           @default(MEDIUM)
+  status        VulnerabilityStatus @default(OPEN)
+  port          Int?
+  service       String?
+  references    String?
+  detectedAt    DateTime           @default(now())
+
+  alerts Alert[]
+
+  @@index([assetId])
+  @@index([severity])
+  @@map("vulnerabilities")
+}
+
+model Event {
+  id            String      @id @default(uuid())
+  source        EventSource @default(SYSTEM)
+  sourceLabel   String?
+  type          String
+  severity      Severity    @default(INFO)
+  title         String
+  description   String?
+  sourceIp      String?
+  destinationIp String?
+  port          Int?
+  protocol      String?
+  assetId       String?
+  asset         Asset?      @relation(fields: [assetId], references: [id])
+  raw           Json?
+  receivedAt    DateTime    @default(now())
+  createdAt     DateTime    @default(now())
+
+  alerts   Alert[]
+  incidents IncidentEvent[]
+
+  @@index([receivedAt])
+  @@index([severity])
+  @@index([assetId])
+  @@map("events")
+}
+
+model CorrelationRule {
+  id          String     @id @default(uuid())
+  name        String     @unique
+  description String?
+  type        RuleType   @default(CORRELATION)
+  status      RuleStatus @default(ACTIVE)
+  condition   Json
+  severity    Severity   @default(MEDIUM)
+  windowMs    Int        @default(60000)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  @@map("correlation_rules")
+}
+
+model Alert {
+  id              String      @id @default(uuid())
+  title           String
+  description     String?
+  severity        Severity    @default(MEDIUM)
+  status          AlertStatus @default(NEW)
+  source          EventSource @default(SIEM)
+  sourceLabel     String?
+  assetId         String?
+  asset           Asset?      @relation(fields: [assetId], references: [id])
+  eventId         String?
+  event           Event?      @relation(fields: [eventId], references: [id])
+  vulnerabilityId String?
+  vulnerability   Vulnerability? @relation(fields: [vulnerabilityId], references: [id])
+  assignedToId    String?
+  assignedTo      User?       @relation(fields: [assignedToId], references: [id])
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  actions   AlertAction[]
+  incidents IncidentAlert[]
+
+  @@index([status])
+  @@index([severity])
+  @@map("alerts")
+}
+
+model AlertAction {
+  id        String   @id @default(uuid())
+  alertId   String
+  alert     Alert    @relation(fields: [alertId], references: [id])
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id])
+  action    String
+  comment   String?
+  createdAt DateTime @default(now())
+
+  @@index([alertId])
+  @@map("alert_actions")
+}
+
+model Incident {
+  id          String         @id @default(uuid())
+  title       String
+  description String?
+  severity    Severity       @default(MEDIUM)
+  status      IncidentStatus @default(OPEN)
+  assetId     String?
+  asset       Asset?         @relation(fields: [assetId], references: [id])
+  createdById String?
+  createdBy   User?          @relation(fields: [createdById], references: [id])
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+
+  events  IncidentEvent[]
+  alerts  IncidentAlert[]
+  actions IncidentAction[]
+
+  @@index([status])
+  @@map("incidents")
+}
+
+model IncidentEvent {
+  incidentId String
+  incident   Incident @relation(fields: [incidentId], references: [id])
+  eventId    String
+  event      Event    @relation(fields: [eventId], references: [id])
+
+  @@id([incidentId, eventId])
+  @@map("incident_events")
+}
+
+model IncidentAlert {
+  incidentId String
+  incident   Incident @relation(fields: [incidentId], references: [id])
+  alertId    String
+  alert      Alert    @relation(fields: [alertId], references: [id])
+
+  @@id([incidentId, alertId])
+  @@map("incident_alerts")
+}
+
+model IncidentAction {
+  id         String   @id @default(uuid())
+  incidentId String
+  incident   Incident @relation(fields: [incidentId], references: [id])
+  userId     String?
+  user       User?    @relation(fields: [userId], references: [id])
+  action     String
+  comment    String?
+  createdAt  DateTime @default(now())
+
+  @@index([incidentId])
+  @@map("incident_actions")
+}
+
+model AuditLog {
+  id         String   @id @default(uuid())
+  userId     String?
+  user       User?    @relation(fields: [userId], references: [id])
+  action     String
+  resource   String?
+  resourceId String?
+  result     String?
+  details    Json?
+  createdAt  DateTime @default(now())
+
+  @@index([createdAt])
+  @@map("audit_logs")
+}

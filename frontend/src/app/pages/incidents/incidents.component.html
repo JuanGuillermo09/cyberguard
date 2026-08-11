@@ -1,0 +1,45 @@
+<!-- incidents.component.html -->
+<!-- Incidentes: formulario de creación, tabla y paginación. -->
+<div class="page">
+  <h1>Incidentes</h1>
+  <p class="subtitle">Investigaciones formales creadas a partir de alertas y eventos.</p>
+
+  <div class="card create">
+    <h3>Crear incidente</h3>
+    <div class="row">
+      <input [(ngModel)]="form.title" name="title" placeholder="Título del incidente" style="flex: 2" />
+      <select [(ngModel)]="form.severity" name="severity" style="width: 150px;">
+        <option value="INFO">INFO</option>
+        <option value="LOW">LOW</option>
+        <option value="MEDIUM">MEDIUM</option>
+        <option value="HIGH">HIGH</option>
+        <option value="CRITICAL">CRITICAL</option>
+      </select>
+      <button class="btn btn-primary" (click)="create()">Crear</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <table>
+      <thead>
+        <tr><th>Severidad</th><th>Título</th><th>Estado</th><th>Activo</th><th>Creado</th></tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let i of items">
+          <td><span class="badge sev-{{ i.severity }}">{{ i.severity }}</span></td>
+          <td>{{ i.title }}</td>
+          <td><span class="status status-{{ i.status }}">{{ i.status }}</span></td>
+          <td>{{ i.asset?.name || '-' }}</td>
+          <td class="muted">{{ i.createdAt | date: 'dd/MM HH:mm' }}</td>
+        </tr>
+        <tr *ngIf="items.length === 0"><td colspan="5" class="muted">Sin incidentes registrados.</td></tr>
+      </tbody>
+    </table>
+
+    <div class="pagination" *ngIf="total > 0">
+      <button class="btn" [disabled]="page <= 1" (click)="page = page - 1; load()">Anterior</button>
+      <span class="muted">Página {{ page }} de {{ totalPages }}</span>
+      <button class="btn" [disabled]="page >= totalPages" (click)="page = page + 1; load()">Siguiente</button>
+    </div>
+  </div>
+</div>

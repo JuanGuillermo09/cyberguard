@@ -1,0 +1,35 @@
+<!-- dashboard-layout.component.html -->
+<!--
+  Estructura general del panel: barra lateral de navegación y área de contenido.
+  Las páginas se cargan dentro de <router-outlet>.
+-->
+<div class="shell">
+  <aside class="sidebar">
+    <div class="brand">
+      <span class="logo">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 2L20 5.5V11C20 16.1 16.6 20.4 12 22C7.4 20.4 4 16.1 4 11V5.5L12 2Z" fill="var(--accent)" opacity="0.2" stroke="var(--accent)" stroke-width="1.6" stroke-linejoin="round"/>
+          <path d="M8.5 11.5L11 14L15.5 9" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </span>
+      <span>CyberGuard</span>
+    </div>
+    <nav>
+      <a
+        *ngFor="let item of visibleNav"
+        [routerLink]="item.path"
+        routerLinkActive="active"
+        [routerLinkActiveOptions]="{ exact: item.path === '' }"
+      >
+        {{ item.icon }} {{ item.label }}
+      </a>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="muted">{{ auth.user()?.username }} ({{ auth.user()?.role }})</div>
+      <button class="btn" (click)="logout()">Cerrar sesión</button>
+    </div>
+  </aside>
+  <main class="content">
+    <router-outlet></router-outlet>
+  </main>
+</div>

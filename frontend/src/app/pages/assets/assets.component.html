@@ -1,0 +1,53 @@
+<!-- assets.component.html -->
+<!-- Catálogo de activos: formulario de registro y tabla con acciones. -->
+<div class="page">
+  <h1>Activos</h1>
+  <p class="subtitle">Infraestructura registrada para monitoreo y análisis.</p>
+
+  <div class="grid grid-2 top">
+    <div class="card">
+      <h3>Registrar activo</h3>
+      <form (ngSubmit)="create()" class="form">
+        <label>Nombre</label>
+        <input [(ngModel)]="form.name" name="name" required placeholder="Servidor Web" />
+        <label>Dirección IP</label>
+        <input [(ngModel)]="form.ipAddress" name="ip" required placeholder="127.0.0.1" />
+        <label>Tipo</label>
+        <select [(ngModel)]="form.type" name="type">
+          <option value="SERVER">Servidor</option>
+          <option value="WORKSTATION">Estación de trabajo</option>
+          <option value="DATABASE">Base de datos</option>
+          <option value="SERVICE">Servicio</option>
+          <option value="APPLICATION">Aplicación</option>
+          <option value="NETWORK">Red</option>
+          <option value="OTHER">Otro</option>
+        </select>
+        <label>Descripción</label>
+        <input [(ngModel)]="form.description" name="desc" placeholder="Opcional" />
+        <button class="btn btn-primary" type="submit">Registrar</button>
+      </form>
+    </div>
+
+    <div class="card">
+      <h3>Activos registrados ({{ total }})</h3>
+      <input placeholder="Buscar por nombre o IP..." [(ngModel)]="search" (ngModelChange)="load()" />
+      <table>
+        <thead>
+          <tr><th>Nombre</th><th>IP</th><th>Tipo</th><th>Estado</th><th>Acción</th></tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let a of items">
+            <td>{{ a.name }}</td>
+            <td class="mono">{{ a.ipAddress }}</td>
+            <td>{{ a.type }}</td>
+            <td><span class="status status-{{ a.status }}">{{ a.status }}</span></td>
+            <td>
+              <button class="btn" (click)="scan(a)">Escanear</button>
+            </td>
+          </tr>
+          <tr *ngIf="items.length === 0"><td colspan="5" class="muted">Sin activos registrados.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

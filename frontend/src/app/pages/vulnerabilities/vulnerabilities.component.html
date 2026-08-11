@@ -1,0 +1,50 @@
+<!-- vulnerabilities.component.html -->
+<!-- Hallazgos del scanner: filtros por severidad/estado, tabla y paginación. -->
+<div class="page">
+  <h1>Vulnerabilidades</h1>
+  <p class="subtitle">Hallazgos detectados por el Vulnerability Scanner.</p>
+
+  <div class="card filters">
+    <select #sev (change)="filters['severity'] = sev.value; load()">
+      <option value="">Toda severidad</option>
+      <option value="CRITICAL">CRITICAL</option>
+      <option value="HIGH">HIGH</option>
+      <option value="MEDIUM">MEDIUM</option>
+      <option value="LOW">LOW</option>
+      <option value="INFO">INFO</option>
+    </select>
+    <select #status (change)="filters['status'] = status.value; load()">
+      <option value="">Todo estado</option>
+      <option value="OPEN">OPEN</option>
+      <option value="VERIFIED">VERIFIED</option>
+      <option value="PATCHED">PATCHED</option>
+      <option value="FALSE_POSITIVE">FALSE POSITIVE</option>
+    </select>
+  </div>
+
+  <div class="card">
+    <table>
+      <thead>
+        <tr><th>Severidad</th><th>CVE</th><th>Título</th><th>Servicio</th><th>Activo</th><th>Estado</th><th>Detectado</th></tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let v of items">
+          <td><span class="badge sev-{{ v.severity }}">{{ v.severity }}</span></td>
+          <td class="mono">{{ v.cveId || '-' }}</td>
+          <td>{{ v.title }}</td>
+          <td class="mono">{{ v.service || '-' }}{{ v.port ? ':' + v.port : '' }}</td>
+          <td>{{ v.asset?.name || '-' }} <span class="muted mono">{{ v.asset?.ipAddress }}</span></td>
+          <td><span class="status status-{{ v.status }}">{{ v.status }}</span></td>
+          <td class="muted">{{ v.detectedAt | date: 'dd/MM/yyyy' }}</td>
+        </tr>
+        <tr *ngIf="items.length === 0"><td colspan="7" class="muted">Sin vulnerabilidades registradas.</td></tr>
+      </tbody>
+    </table>
+
+    <div class="pagination" *ngIf="total > 0">
+      <button class="btn" [disabled]="page <= 1" (click)="page = page - 1; load()">Anterior</button>
+      <span class="muted">Página {{ page }} de {{ totalPages }}</span>
+      <button class="btn" [disabled]="page >= totalPages" (click)="page = page + 1; load()">Siguiente</button>
+    </div>
+  </div>
+</div>

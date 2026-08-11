@@ -1,0 +1,21 @@
+// assets.component.scss
+// Estilos de la página de activos.
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form input,
+.form select {
+  margin-bottom: 8px;
+}
+
+.top {
+  align-items: start;
+}
+
+table {
+  margin-top: 10px;
+}

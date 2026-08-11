@@ -1,0 +1,52 @@
+<!-- events.component.html -->
+<!-- Eventos SIEM: filtros, tabla de eventos normalizados y paginación. -->
+<div class="page">
+  <h1>Eventos de seguridad</h1>
+  <p class="subtitle">Eventos normalizados y centralizados por el SIEM.</p>
+
+  <div class="card filters">
+    <select #sev (change)="filters['severity'] = sev.value; load()">
+      <option value="">Toda severidad</option>
+      <option value="CRITICAL">CRITICAL</option>
+      <option value="HIGH">HIGH</option>
+      <option value="MEDIUM">MEDIUM</option>
+      <option value="LOW">LOW</option>
+      <option value="INFO">INFO</option>
+    </select>
+    <select #source (change)="filters['source'] = source.value; load()">
+      <option value="">Toda fuente</option>
+      <option value="SCANNER">Scanner</option>
+      <option value="IDS">IDS</option>
+      <option value="SIEM">SIEM</option>
+      <option value="APPLICATION">Aplicación</option>
+      <option value="SYSTEM">Sistema</option>
+    </select>
+    <input #ip placeholder="Buscar IP..." (keyup.enter)="filters['sourceIp'] = ip.value; load()" />
+  </div>
+
+  <div class="card">
+    <table>
+      <thead>
+        <tr><th>Severidad</th><th>Tipo</th><th>Fuente</th><th>Origen</th><th>Destino</th><th>Activo</th><th>Recibido</th></tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let e of items">
+          <td><span class="badge sev-{{ e.severity }}">{{ e.severity }}</span></td>
+          <td class="mono">{{ e.type }}</td>
+          <td>{{ e.sourceLabel || e.source }}</td>
+          <td class="mono">{{ e.sourceIp || '-' }}</td>
+          <td class="mono">{{ e.destinationIp || '-' }}</td>
+          <td>{{ e.asset?.name || '-' }}</td>
+          <td class="muted">{{ e.receivedAt | date: 'dd/MM HH:mm:ss' }}</td>
+        </tr>
+        <tr *ngIf="items.length === 0"><td colspan="7" class="muted">Sin eventos registrados.</td></tr>
+      </tbody>
+    </table>
+
+    <div class="pagination" *ngIf="total > 0">
+      <button class="btn" [disabled]="page <= 1" (click)="page = page - 1; load()">Anterior</button>
+      <span class="muted">Página {{ page }} de {{ totalPages }}</span>
+      <button class="btn" [disabled]="page >= totalPages" (click)="page = page + 1; load()">Siguiente</button>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,12 @@
+// vulnerabilities.component.scss
+// Estilos de la página de vulnerabilidades.
+
+.filters {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.filters select {
+  width: 200px;
+}

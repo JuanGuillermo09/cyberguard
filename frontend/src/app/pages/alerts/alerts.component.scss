@@ -1,0 +1,12 @@
+// alerts.component.scss
+// Estilos de la página de alertas.
+
+.filters {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.filters select {
+  width: 200px;
+}

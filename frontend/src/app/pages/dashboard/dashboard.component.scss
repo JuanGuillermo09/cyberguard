@@ -1,0 +1,60 @@
+// dashboard.component.scss
+// Estilos del panel principal (métricas, barras de severidad y feeds en vivo).
+
+.stat .value {
+  font-size: 34px;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.stat .label {
+  margin-top: 4px;
+  font-size: 13px;
+  color: var(--text-dim);
+}
+
+.stat .muted {
+  margin-top: 2px;
+}
+
+.sev-row {
+  display: grid;
+  grid-template-columns: 90px 1fr 40px;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.sev-row .bar > div {
+  min-width: 4px;
+}
+
+.live-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 0;
+  border-bottom: 1px solid rgba(34, 48, 65, 0.4);
+}
+
+.live-row .type {
+  color: var(--info);
+  min-width: 150px;
+}
+
+.live-row .dim {
+  flex: 1;
+}
+
+.port-chip {
+  display: inline-block;
+  background: var(--panel-2);
+  border: 1px solid var(--border);
+  padding: 4px 10px;
+  border-radius: 12px;
+  margin: 0 6px 6px 0;
+}
+
+.score {
+  color: var(--accent);
+}

@@ -1,0 +1,107 @@
+<!-- dashboard.component.html -->
+<!-- Vista principal: métricas, gráficos de severidad, tiempo real y recientes. -->
+<div class="page">
+  <h1>Estado general de seguridad</h1>
+  <p class="subtitle">
+    Resumen de la infraestructura monitoreada por CyberGuard · Puntaje:
+    <strong class="score">{{ summary?.securityScore ?? 0 }}/100</strong>
+  </p>
+
+  <ng-container *ngIf="summary">
+    <div class="grid grid-4">
+      <div class="card stat">
+        <div class="value">{{ summary.assets }}</div>
+        <div class="label">Activos monitoreados</div>
+        <div class="muted">{{ summary.activeAssets }} activos</div>
+      </div>
+      <div class="card stat">
+        <div class="value">{{ summary.vulnerabilities }}</div>
+        <div class="label">Vulnerabilidades</div>
+        <div class="muted">{{ summary.events }} eventos totales</div>
+      </div>
+      <div class="card stat">
+        <div class="value">{{ summary.activeAlerts }}</div>
+        <div class="label">Alertas activas</div>
+        <div class="muted">{{ summary.alerts }} alertas totales</div>
+      </div>
+      <div class="card stat">
+        <div class="value">{{ summary.openIncidents }}</div>
+        <div class="label">Incidentes abiertos</div>
+        <div class="muted">{{ summary.incidents }} incidentes totales</div>
+      </div>
+    </div>
+
+    <div class="grid grid-2">
+      <div class="card">
+        <h3>Vulnerabilidades por severidad</h3>
+        <div *ngFor="let sev of severityOrder" class="sev-row">
+          <span class="badge sev-{{ sev }}">{{ sev }}</span>
+          <div class="bar">
+            <div [style.width]="barWidth(sev, 'vuln')" [class]="'sev-' + sev"></div>
+          </div>
+          <span class="mono">{{ summary.vulnerabilitiesBySeverity[sev] }}</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Alertas por severidad</h3>
+        <div *ngFor="let sev of severityOrder" class="sev-row">
+          <span class="badge sev-{{ sev }}">{{ sev }}</span>
+          <div class="bar">
+            <div [style.width]="barWidth(sev, 'alert')" [class]="'sev-' + sev"></div>
+          </div>
+          <span class="mono">{{ summary.alertsBySeverity[sev] }}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid grid-2">
+      <div class="card">
+        <h3>Eventos en tiempo real</h3>
+        <div *ngIf="(liveEvents().length === 0)" class="muted">Sin eventos en vivo todavía.</div>
+        <div *ngFor="let ev of liveEvents()" class="live-row">
+          <span class="badge sev-{{ ev.severity }}">{{ ev.severity }}</span>
+          <span class="mono type">{{ ev.type }}</span>
+          <span class="dim">{{ ev.title }}</span>
+          <span class="muted">{{ ev.receivedAt | date: 'HH:mm:ss' }}</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Alertas en tiempo real</h3>
+        <div *ngIf="(liveAlerts().length === 0)" class="muted">Sin alertas en vivo todavía.</div>
+        <div *ngFor="let al of liveAlerts()" class="live-row">
+          <span class="badge sev-{{ al.severity }}">{{ al.severity }}</span>
+          <span class="dim">{{ al.title }}</span>
+          <span class="muted">{{ al.createdAt | date: 'HH:mm:ss' }}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Servicios expuestos detectados</h3>
+      <div *ngIf="summary.exposedPorts.length === 0" class="muted">Ninguno por el momento.</div>
+      <span *ngFor="let p of summary.exposedPorts" class="port-chip mono">
+        {{ p.service || 'unknown' }}:{{ p.port }}
+      </span>
+    </div>
+
+    <div class="card">
+      <h3>Eventos recientes</h3>
+      <table>
+        <thead>
+          <tr><th>Severidad</th><th>Tipo</th><th>Fuente</th><th>Origen</th><th>Fecha</th></tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let ev of summary.recentEvents">
+            <td><span class="badge sev-{{ ev.severity }}">{{ ev.severity }}</span></td>
+            <td class="mono">{{ ev.type }}</td>
+            <td>{{ ev.sourceLabel || ev.source }}</td>
+            <td class="mono">{{ ev.sourceIp || ev.destinationIp || '-' }}</td>
+            <td class="muted">{{ ev.receivedAt | date: 'dd/MM HH:mm:ss' }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </ng-container>
+</div>
