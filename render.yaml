@@ -20,6 +20,9 @@
 #
 # Uso del blueprint: conectar este repositorio a Render -> New Blueprint ->
 # elegir este repositorio. Render crea la BD y el servicio automáticamente.
+#
+# Nota: la versión de Node (20) se fija con el archivo `.node-version` de la
+# raíz del repositorio (el campo `nodeVersion` no existe en render.yaml).
 
 databases:
   - name: cyberguard-db
@@ -32,7 +35,6 @@ services:
     name: cyberguard
     runtime: node
     plan: free
-    nodeVersion: "20"
     healthCheckPath: /api/health
     autoDeploy: true
     buildCommand: |
